@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
-const UserBike = database.import('./models/userbike');
-const User = database.import('./models/user');
-const Appointments = database.import('./models/appointments')
+// const UserBike = database.import('./models/userbike');
+// const User = database.import('./models/user');
+// const Appointments = database.import('./models/appointments')
 
 const sequelize = new Sequelize( process.env.DATABASE_URL, {
 
@@ -17,6 +17,8 @@ sequelize.authenticate().then(
         console.log(err);
     }
 );
+
+
 
 module.exports = sequelize;
 

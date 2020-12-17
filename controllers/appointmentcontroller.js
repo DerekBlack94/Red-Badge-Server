@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const Appointments = require('../models/appointments');
 
-const validateSession = require('../middleware/validateSession');
+const validateSession = require('../middleware/validate-session');
 
-const Appointments = require('../db').import('../models/appointments');
+// const Appointments = require('../db').import('../models/appointments');
 
 router.post('/create', validateSession, (req, res) => {
     const AppointmentsCreate = {
@@ -62,4 +62,4 @@ router.delete("/:id", validateSession, (req, res) => {
     .catch((err) => res.status(500).json({ error: err}));
 });
 
-module.export = router;
+module.exports = router;

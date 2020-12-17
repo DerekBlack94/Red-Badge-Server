@@ -3,7 +3,9 @@ let router = express.Router();
 let validateSession = require('../middleware/validate-session');
 const UserBike = require('../models/userbike');
 
-const UserBike = require('../db').import('../models/userbike');
+// const UserBike = require('../db').import('../models/userbike');
+
+// const {UserBike} = require('../models')
 
 router.post('/create', validateSession, (req, res) => {
     const UserBikeCreate = {
@@ -71,6 +73,6 @@ router.delete("/:id", validateSession, (req, res) => {
     .catch((err) => res.status(500).json({ error: err}));
 });
 
-module.export = router;
+module.exports = router;
 
 

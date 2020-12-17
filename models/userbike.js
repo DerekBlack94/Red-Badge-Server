@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         },
         userInput: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(2000),
             allowNull: true
         },
         owner: {
