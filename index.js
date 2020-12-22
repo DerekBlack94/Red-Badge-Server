@@ -8,9 +8,9 @@ let db = require('./db');
 
 app.use(require('./middleware/headers'));
 // const controllers = require('./controllers')
+const validateSession = require('./middleware/validate-session');
 const userbike = require('./controllers/userbikecontroller');
 const user = require('./controllers/usercontroller');
-const validateSession = require('./middleware/validate-session');
 const appointments = require('./controllers/appointmentcontroller');
 
 sequelize.sync();

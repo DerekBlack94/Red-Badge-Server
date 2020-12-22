@@ -1,7 +1,11 @@
-module.exports = (sequelize, DataTypes) => {
-    const Appointments = sequelize.define('appointments', {
+        const {DataTypes} = require('sequelize');
+        const db = require('../db');
+
+
+
+    const Appointments = db.define('appointments', {
         savedDate: {
-            type: DataTypes.DATE,
+            type: DataTypes.STRING,
             allowNull: false
         },
         userInput: {
@@ -11,6 +15,6 @@ module.exports = (sequelize, DataTypes) => {
         owner: {
             type: DataTypes.INTEGER
         }
-    })
-    return Appointments;
-}
+    });
+ 
+module.exports = Appointments

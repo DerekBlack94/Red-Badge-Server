@@ -1,61 +1,76 @@
+
 const router = require('express').Router();
-// const User = require('../db').import('../models/user');
-const jwt = require("jsonwebtoken");
+const {User} = require('../models/');
+
 const bcrypt = require('bcryptjs');
-const {User} = require('../models')
+const jwt = require('jsonwebtoken');
 
+const { UniqueConstraintError } = require('sequelize/lib/errors');
+const { response } = require('express');
 
-// ******* USER SIGNUP ********
-router.post('/create', function(req, res) {
+//* SIGN UP
 
-    User.create({
-        firstName: req.body.user.firstName,
-        lastName: req.body.user.lastName,
-        email: req.body.user.email,
-        password: bcrypt.hashSync(req.body.user.password, 13)
-    })
-        .then(
-            function createSuccess(user) {
-                let token = jwt.sign({id: user.id}, process.env.JWT_SECRET, {expiresIn: 60 * 60 * 24});
-                res.json({
-                    user: user,
-                    message: 'User successfully created!',
-                    sessionToken: token
-                });
-            }  
-        )
-        .catch(err => res.status(500).json({ error: err }))
-});
+router.post('/register', async (req, res) => {
+    let {firstName, lastName, email, password, admin } = req.body;
 
-
-
-// ************* USER LOGIN *************
-router.post('/login', function(req, res) {
-    User.findOne({
-        where: {
-            email: req.body.user.email
-        }
-})
-    .then(function loginSuccess(user) {
-        if (user) {
-            bcrypt.compare(req.body.user.password, user.password, function (err, matches) {
-                if (matches) {
-
-                    let token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24 })
-
-                    res.status(200).json({
-                        user: user,
-                        message: "User successfully logged in!",
-                        sessionToken: token
-                    })
-                } else {
-                    res.status(502).send({ error: "Login Failed" });
-                }
-            });
+    try {
+        const newUser = await User.create({
+            firstName,
+            lastName,
+            email,
+            password: bcrypt.hashSync(password, 13),
+            admin
+        })
+        res.status(201).json({
+            message: "User registerd!",
+            user: newUser
+        })
+    } catch (error) {
+        if (error instanceof UniqueConstraintError){
+            res.status(409).json({
+                message: "Email already in use."
+            })
         } else {
-            res.status(500).json({ error: 'User does not exist.'})
+            res.status(500).json({
+                error: "Failed to register user."
+            })
         }
-    })
-    .catch(err => res.status(500).json({ error: err }))
+    }
 });
+
+//* User Login
+
+router.post('/login', async (req, res) => {
+    let {email, password} = req.body;
+
+    try {
+        let loginUser = await User.findOne({
+            where: { email }
+        })
+        //console.log("loginUser", loginUser)
+        if(loginUser && await bcrypt.compare(password, loginUser.password)) {
+            const token = jwt.sign({id: loginUser.id}, process.env.JWT_SECRET, {expiresIn: 60 * 60 * 24})//*86,400 secounds in a day
+
+            res.status(200).json({
+                message: 'Login succeeded!',
+                user: loginUser,
+                token
+            })
+        } else {
+            res.status(401).json({
+                message: 'Login Failed: user infromation incorrect.'
+            })
+        }
+        
+    } catch (error) {
+        res.status(500).json({
+            error: 'Error logging in!'
+        })
+        
+    }
+})
+
+
+
+
 module.exports = router;

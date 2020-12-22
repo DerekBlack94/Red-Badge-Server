@@ -35,7 +35,13 @@
 // db.Sequelize = Sequelize;
 const User = require('./user');
 const UserBike = require('./userbike');
-const Appointments = require('./appointments')
+const Appointments = require('./appointments');
+
+Appointments.belongsTo(User);
+UserBike.belongsTo(User);
+
+User.hasMany(Appointments);
+User.hasMany(UserBike);
 
 
 module.exports = {User, UserBike, Appointments};
