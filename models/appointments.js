@@ -12,9 +12,7 @@
             type: DataTypes.STRING,
             allowNull: false
         },
-        owner: {
-            type: DataTypes.INTEGER
-        }
+       
     });
  
 module.exports = Appointments

@@ -8,20 +8,21 @@ const validateSession = require('../middleware/validate-session');
 
 router.post('/create', validateSession, async (req, res) => {
     try{
-    const addAppointment = await Appointments.create  ({
+    await Appointments.create  ({
         savedDate: req.body.appointments.savedDate,
         userInput: req.body.appointments.userInput,
-        owner: req.user.id,
+        
+        userId: req.user.id,
     })
-    res.status(200).json({
-        appointments: addAppointment,
-        message: "Appointment Added"
-    })
+    // res.status(200).json({
+    //     appointments: addAppointment,
+    //     message: "Appointment Added"
+    // })
     // Appointments.create(AppointmentsCreate)
-    // .then(appointment => res.status(200).json({
-    //     appointment: addAppointment,
-    //     message: "Appointment Created"
-    // }))
+    .then(appointment => res.status(200).json({
+        // appointment: addAppointment,
+        message: "Appointment Created"
+    }))
 } catch (err){
     res.status(500).json({
         error: err
@@ -33,30 +34,47 @@ router.post('/create', validateSession, async (req, res) => {
 //**UPDATE APPOINTMENT */
 
 router.put('/:id', validateSession, async (req, res) => {
-    console.log(req.user.id, req.params.id)
-    const updatedAppointments = {
-        savedDate: req.body.appointments.savedDate,
-        userInput: req.body.appointments.userInput,
-        
-
-    };
-    try{
-
-    const query = req.params.id;
+    // console.log(req.user.id, req.params.id)
+    console.log(req.user.role)
+    const userAppointment = await Appointments.findOne({ where:{ id: req.params.id}})
+    // console.log(userAppointment)
+    // console.log(userAppointment.userId)
+    // console.log(req.user.id)
+    
+    // console.log(req.user.id)
+    
     // {where: {id: req.params.id, owner: req.user.id}};
+    try{
+        
+        
+        if(userAppointment.userId === req.user.id || req.user.role === "admin"){
+            const query = req.params.id;
+            const updatedAppointments = {
+                    savedDate: req.body.appointments.savedDate,
+                    userInput: req.body.appointments.userInput,
+                
+                
+                };
 
-    // Appointments.update(updateAppointments, query)
-    await Appointments.update(updatedAppointments, {where: {id: query}})
-    .then((updatedAppointments) => {
-        Appointments.findOne({where: {id: query}})
-        .then((locatedUpdatedAppointment) => {
+        let locatedUpdatedAppointment = await Appointments.findOne({where: {id: req.params.id}})
+         Appointments.update(updatedAppointments, {where:{id: query}})
+        
+   
+        .then((updatedAppointments) => {
             res.status(200).json({
                 updated: locatedUpdatedAppointment,
                 message: "Appointment Updated",
-                newAppointment: updatedAppointments,
+                newAppointment: updatedAppointments
             })
-        })
-    })
+            .catch((err) => {
+                console.log(err)
+            }) 
+        })} else {
+            res.status(403).json({
+                error: "not Authorized"
+            })
+        }
+    
     } catch (error) {
         res.status(500).json({
             message: "update Failed",
@@ -102,19 +120,31 @@ router.get("/", validateSession, async (req, res) => {
 
 router.delete("/:id", validateSession, async (req, res) => {
     // const query = { where: { id: req.params.id, owner: req.user.id} };
+    const userAppointment = await Appointments.findOne({ where:{ id: req.params.id}})
     try{
-    const query = req.params.id;
-    await Appointments.destroy({where: {id: query}})
-    .then((deletedAppointment) => {
-        Appointments.findOne({where: {id: query}})
-        .then((locatedDeletedAppointment) => {
+        console.log(userAppointment.userId)
+        console.log(req.user.id)
+        
+        if(userAppointment.userId === req.user.id || req.user.role === "admin"){
+        const query = req.params.id;
+     let locatedDeletedAppointment = await Appointments.findOne({where: {id: query}})
+    // .then((deletedAppointment) => {
+        Appointments.destroy({where: {id: query}})
+        .then((deletedAppointment) => {
             res.status(200).json({
                 deletedAppointment: deletedAppointment,
                 message: "Appointment deleted",
                 locatedDelete: locatedDeletedAppointment
             })
-        })
-    });
+            .catch((err) => {
+                console.log(err)
+            })
+        })} else {
+            res.status(403).json({
+                error: "Not Authroized"
+            })
+        };
+   
 } catch (error) {
     res.status(500).json({
         error: error,

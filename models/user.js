@@ -22,9 +22,9 @@ const db = require('../db');
             type: DataTypes.STRING,
             allowNull: false
         },
-        admin: {
-            type: DataTypes.BOOLEAN,
-            allowNull: true,
+        role: {
+            type: DataTypes.ENUM('user' ,'admin'),
+            defaultValue: 'user',
         },
     });
     module.exports = User

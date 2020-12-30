@@ -19,7 +19,7 @@ router.post('/create', validateSession, async (req, res) => {
         size: req.body.userbike.size,
         tireSize: req.body.userbike.tireSize,
         userInput: req.body.userbike.userInput,
-        owner: req.user.id,
+        userId: req.user.id,
     })
     
      res.status(200).json({
@@ -139,19 +139,28 @@ router.get("/", validateSession, async (req, res) => {
 
 
 router.delete("/:id", validateSession, async (req, res) => {
+    const userbike = await UserBike.findOne({where: {id: req.params.id}})
     try{
-        const query = req.user.id;
-        await UserBike.destroy({where: {id: query}})
-        .then((deletedUserBike) => {
-            UserBike.findOne({ where: {id: query}})
-            .then((locatedDeletedUserBike) => {
+        if(userbike.userId === req.user.id || req.user.role === "admin"){
+            const query = req.user.id;
+        let locatedDeletedBike = await UserBike.findOne({where: {id: query}})
+        // .then((deletedUserBike) => {
+            UserBike.destroy({ where: {id: query}})
+            .then((deletedUserBike) => {
                 res.status(200).json({
                     deletedUserBike: deletedUserBike,
                     message: "User Bike Deleted",
-                    locatedDelete: locatedDeletedUserBike
+                    locatedDelete: locatedDeletedBike
                 })
-            })
-        });
+                .catch((err) => {
+                    console.log(err)
+                })
+            })} else {
+                res.status(403).json({
+                    error: "Not Authorized"
+                })
+            };
+        // });
     } catch (error) {
         res.status(500).json({
             error: error,

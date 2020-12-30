@@ -32,10 +32,7 @@ const db = require('../db');
             type: DataTypes.STRING(2000),
             allowNull: true
         },
-        owner: {
-            type: DataTypes.INTEGER
-        }
-
+       
     });
     module.exports = UserBike
     

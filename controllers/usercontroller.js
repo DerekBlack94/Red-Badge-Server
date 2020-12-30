@@ -11,7 +11,7 @@ const { response } = require('express');
 //* SIGN UP
 
 router.post('/register', async (req, res) => {
-    let {firstName, lastName, email, password, admin } = req.body;
+    let {firstName, lastName, email, password, role } = req.body;
 
     try {
         const newUser = await User.create({
@@ -19,7 +19,7 @@ router.post('/register', async (req, res) => {
             lastName,
             email,
             password: bcrypt.hashSync(password, 13),
-            admin
+            role
         })
         res.status(201).json({
             message: "User registerd!",
