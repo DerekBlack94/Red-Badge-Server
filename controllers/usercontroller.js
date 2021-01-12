@@ -23,11 +23,12 @@ router.post('/register', async (req, res) => {
         })
         res.status(201).json({
             message: "User registerd!",
-            user: newUser
+            user: newUser,
+            
         })
     } catch (error) {
         if (error instanceof UniqueConstraintError){
-            res.status(409).json({
+            res.status(418).json({
                 message: "Email already in use."
             })
         } else {
@@ -55,6 +56,7 @@ router.post('/login', async (req, res) => {
                 message: 'Login succeeded!',
                 user: loginUser,
                 token
+                
             })
         } else {
             res.status(401).json({

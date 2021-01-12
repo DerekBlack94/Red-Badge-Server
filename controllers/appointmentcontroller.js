@@ -8,11 +8,13 @@ const validateSession = require('../middleware/validate-session');
 
 router.post('/create', validateSession, async (req, res) => {
     try{
+
     await Appointments.create  ({
         savedDate: req.body.appointments.savedDate,
         userInput: req.body.appointments.userInput,
         
         userId: req.user.id,
+        
     })
     // res.status(200).json({
     //     appointments: addAppointment,
@@ -29,6 +31,42 @@ router.post('/create', validateSession, async (req, res) => {
     })
 }
 })
+
+router.get('/', async (req, res) => {
+    try {
+        let getAppointments = await Appointments.findAll({
+            include: ['user']
+        })
+        res.status(200).json({
+            GetAppointments: getAppointments,
+            message: 'All Appointments'
+        })
+    } catch (error) {
+        res.status(200).json({ error: err })
+    }
+})
+
+
+// router.get("/", validateSession, async (req, res) => {
+//     let query = req.user.id
+//     try{
+
+//      let searchedAppointments = await Appointments.findAll({
+//         where: { owner: query },
+//         // include: 'user'
+//     })
+//     res.status(200).json({
+//         searchedAppointments: searchedAppointments,
+//         message: "Set Appointments"
+//     })
+// } catch (error) {
+//     res.status(500).json({
+//         message: "Appointment Search Failed",
+//         error: error
+//     })
+// }
+   
+// })
 // (err => res.status(500).json ({ error: err}))
 // });
 //**UPDATE APPOINTMENT */
@@ -92,29 +130,6 @@ router.put('/:id', validateSession, async (req, res) => {
 //**GET ALL APPOINTMENTS */
 
 
-router.get("/", validateSession, async (req, res) => {
-    let query = req.user.id
-    try{
-
-     let searchedAppointments = await Appointments.findAll({
-        where: { owner: query },
-        // include: 'user'
-    })
-    res.status(200).json({
-        searchedAppointments: searchedAppointments,
-        message: "Set Appointments"
-    })
-} catch (error) {
-    res.status(500).json({
-        message: "Appointment Search Failed",
-        error: error
-    })
-}
-//     .then(appointment => res.status(200).json(appointment))
-//     .catch(err => res.status(500).json({
-//         error: err
-//     }))
-})
 
 //**delete APPOINTMENTS */
 
@@ -124,6 +139,7 @@ router.delete("/:id", validateSession, async (req, res) => {
     try{
         console.log(userAppointment.userId)
         console.log(req.user.id)
+        console.log(req.user.role)
         
         if(userAppointment.userId === req.user.id || req.user.role === "admin"){
         const query = req.params.id;

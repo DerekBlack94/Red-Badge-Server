@@ -107,32 +107,42 @@ router.put('/:id', validateSession, async (req, res) => {
 // })
 
 //**GET ALL BIKES */
+router.get('/', async (req, res) => {
+    try {
+        let getUserBike = await UserBike.findAll({
+            include: ['user']
+        })
+        res.status(200).json({
+            getUserBike: getUserBike,
+            message: 'All Appointments'
+        })
+    } catch (error) {
+        res.status(200).json({ error: err })
+    }
+})
 
-router.get("/", validateSession, async (req, res) => {
-    console.log(req.params.id, req.user.id)
-    let query = req.user.id
-    try{
+// router.get("/", validateSession, async (req, res) => {
+//     console.log(req.params.id, req.user.id)
+//     let query = req.user.id
+//     try{
 
-     let searchedUserBike = await UserBike.findAll({
-        where: { owner: query },
-        //  include: 'user'
-    })
-    res.status(200).json({
-        searchedUserBike: searchedUserBike,
-        message: "User Bikes"
-    })
-} catch (error) {
-    res.status(500).json({
-        message: "User Search Failed",
-        error: error
+//      let searchedUserBike = await UserBike.findAll({
+//         where: { owner: query },
+//         //  include: 'user'
+//     })
+//     res.status(200).json({
+//         searchedUserBike: searchedUserBike,
+//         message: "User Bikes"
+//     })
+// } catch (error) {
+//     res.status(500).json({
+//         message: "User Search Failed",
+//         error: error
 
-    })
-}
-    // .then(userbike => res.status(200).json(userbike))
-    // .catch(err => res.status(500).json({
-    //     error: err
-    // }))
-}),
+//     })
+// }
+    
+// }),
 
 //**DELETE */
 
@@ -140,9 +150,12 @@ router.get("/", validateSession, async (req, res) => {
 
 router.delete("/:id", validateSession, async (req, res) => {
     const userbike = await UserBike.findOne({where: {id: req.params.id}})
+    
     try{
+        console.log(userbike.userId)
+        console.log(req.user.id)
         if(userbike.userId === req.user.id || req.user.role === "admin"){
-            const query = req.user.id;
+            const query = req.params.id;
         let locatedDeletedBike = await UserBike.findOne({where: {id: query}})
         // .then((deletedUserBike) => {
             UserBike.destroy({ where: {id: query}})
