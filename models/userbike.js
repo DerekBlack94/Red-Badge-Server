@@ -32,6 +32,20 @@ const db = require('../db');
             type: DataTypes.STRING(2000),
             allowNull: true
         },
+        workers: {
+            type: DataTypes.ENUM("mitch", "alex", "david"),
+            allowNull: true,
+            
+        },
+        taskColor: {
+            type: DataTypes.ENUM("Green", "Yellow", "Red"),
+            allowNull: true,
+            
+        },
+        dueDate: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        }
        
     });
     module.exports = UserBike

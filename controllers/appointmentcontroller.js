@@ -6,36 +6,81 @@ const validateSession = require('../middleware/validate-session');
 
 // const Appointments = require('../db').import('../models/appointments');
 
-router.post('/create', validateSession, async (req, res) => {
-    try{
+router.post('/create', async (req, res) => {
+    let {savedDate, userInput, appCount } = req.body;
 
-    await Appointments.create  ({
-        savedDate: req.body.appointments.savedDate,
-        userInput: req.body.appointments.userInput,
+    try {
+        const addAppointment = await Appointments.create({
+            savedDate,
+            userInput,
+            appCount,
+           
+        })
+        res.status(201).json({
+            message: "Appointment registerd!",
+            appointment: addAppointment,
+            
+        })
+    
+
+} catch (error) {
+                console.log(error);
+                
+            
+                res.status(500).json({
+                    
+                 message: "Appointment Creation Failed."
+                 });
+                
+             }
+});
+
+// router.post('/create', validateSession, async (req, res) => {
+//     try{
+
+//     await Appointments.create  ({
+//         savedDate: req.body.appointments.savedDate,
+//         userInput: req.body.appointments.userInput,
         
-        userId: req.user.id,
+//         userId: req.user.id,
         
-    })
+//     })
     // res.status(200).json({
     //     appointments: addAppointment,
     //     message: "Appointment Added"
     // })
     // Appointments.create(AppointmentsCreate)
-    .then(appointment => res.status(200).json({
+    // .then(appointment => res.status(200).json({
         // appointment: addAppointment,
-        message: "Appointment Created"
-    }))
-} catch (err){
-    res.status(500).json({
-        error: err
-    })
-}
-})
+//         message: "Appointment Created"
+//     }))
+// } catch (err){
+//     res.status(500).json({
+//         error: err
+//     })
+// }
+// })
+
+// router.get('/count',(req,res)=>{
+//     const promise = Appointments.aggregate([
+//       {
+//         $group:{
+//           _id:'$status',
+//           count:{$sum:1}
+//         }
+//       }
+//     ])
+//     promise.then((count)=>{
+//       res.json(count)
+//     }).catch((err)=>{
+//       res.json(err)
+//     })
+//   })
 
 router.get('/', async (req, res) => {
     try {
         let getAppointments = await Appointments.findAll({
-            include: ['user']
+            // include: ['user']
         })
         res.status(200).json({
             GetAppointments: getAppointments,

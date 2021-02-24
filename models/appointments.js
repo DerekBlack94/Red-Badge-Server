@@ -12,6 +12,10 @@
             type: DataTypes.STRING,
             allowNull: false
         },
+        appCount: {
+            type: DataTypes.INTEGER,
+            allowNull: true
+        },
        
     });
  
