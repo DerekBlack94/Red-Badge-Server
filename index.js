@@ -29,7 +29,7 @@ app.use('/appointments', appointments)
 db.authenticate()
 .then(() => db.sync()) // => {force : true}
 .then(() => {
-    app.listen(process.env.PORT, () => console.log(`[Server: ] App is listing on Port ${process.env.PORT}`));
+    app.listen(process.env.PORT || 3000 , () => console.log(`[Server: ] App is listing on Port ${process.env.PORT}`));
 
 })
 .catch((err) =>{
